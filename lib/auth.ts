@@ -1,9 +1,15 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { cookies } from 'next/headers'
+import crypto from 'crypto'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+// Auto-generate JWT secret if not provided
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex')
 const COOKIE_NAME = 'auth_token'
+
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+  console.warn('⚠️  JWT_SECRET not set! Using auto-generated secret. Set JWT_SECRET env variable for persistence.')
+}
 
 export interface JWTPayload {
   userId: string
