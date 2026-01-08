@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import TableWrapper from './TableWrapper'
 
 interface Transaction {
   id: string
@@ -194,7 +195,64 @@ export default function IslemlerFiltre({ transactions }: IslemlerFiltreProps) {
             {transactions.length === 0 ? 'Henüz işlem kaydı yok' : 'Filtreye uygun işlem bulunamadı'}
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <TableWrapper
+            mobileCards={
+              <>
+                {filteredTransactions.map((transaction) => (
+                  <div key={transaction.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <span
+                          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                            transaction.type === 'PURCHASE'
+                              ? 'bg-blue-100 text-blue-700'
+                              : 'bg-green-100 text-green-700'
+                          }`}
+                        >
+                          {transaction.type === 'PURCHASE' ? '📥 Alım' : '📤 Satış'}
+                        </span>
+                        <p className="text-sm text-gray-600 mt-2">
+                          {new Date(transaction.date).toLocaleDateString('tr-TR')}
+                        </p>
+                      </div>
+                      <span
+                        className={`text-lg font-bold ${
+                          transaction.type === 'PURCHASE'
+                            ? 'text-blue-600'
+                            : 'text-green-600'
+                        }`}
+                      >
+                        ₺{Number(transaction.price).toLocaleString('tr-TR')}
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      <div>
+                        <p className="text-xs text-gray-600 mb-1">Araç:</p>
+                        <a
+                          href={`/panel/araclar/${transaction.vehicle.licensePlate}`}
+                          className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                        >
+                          {transaction.vehicle.brand} {transaction.vehicle.model}
+                        </a>
+                        <p className="text-xs text-gray-500">{transaction.vehicle.licensePlate}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600 mb-1">Müşteri:</p>
+                        <p className="text-sm text-gray-900">{transaction.customer.name}</p>
+                        <a href={`tel:${transaction.customer.phone}`} className="text-xs text-primary-600 hover:text-primary-700">
+                          {transaction.customer.phone}
+                        </a>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600 mb-1">İşlemi Yapan:</p>
+                        <p className="text-sm text-gray-900">{transaction.createdBy.name}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            }
+          >
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200">
@@ -210,7 +268,7 @@ export default function IslemlerFiltre({ transactions }: IslemlerFiltreProps) {
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                     Müşteri
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700">
                     Tutar
                   </th>
                   <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
@@ -255,7 +313,7 @@ export default function IslemlerFiltre({ transactions }: IslemlerFiltreProps) {
                         {transaction.customer.phone}
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 text-right">
                       <span
                         className={`text-sm font-medium ${
                           transaction.type === 'PURCHASE'
@@ -273,7 +331,7 @@ export default function IslemlerFiltre({ transactions }: IslemlerFiltreProps) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </TableWrapper>
         )}
       </div>
     </div>
