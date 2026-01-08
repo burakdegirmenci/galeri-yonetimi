@@ -44,13 +44,13 @@ export default function KullaniciDuzenleForm({ user, onSuccess }: KullaniciDuzen
     e.preventDefault()
 
     // Validate required fields
-    const nameError = validateRequired(formData.name)
-    const emailError = validateEmail(formData.email)
+    const nameValidation = validateRequired(formData.name, 'Ad Soyad')
+    const emailValidation = validateEmail(formData.email)
 
-    if (nameError || emailError) {
+    if (!nameValidation.isValid || !emailValidation.isValid) {
       setErrors({
-        name: nameError || '',
-        email: emailError || '',
+        name: nameValidation.error || '',
+        email: emailValidation.error || '',
         password: '',
       })
       return
@@ -115,12 +115,12 @@ export default function KullaniciDuzenleForm({ user, onSuccess }: KullaniciDuzen
             label="Ad Soyad"
             type="text"
             value={formData.name}
-            onChange={(value) => {
-              setFormData({ ...formData, name: value })
+            onChange={(e) => {
+              setFormData({ ...formData, name: e.target.value })
               setErrors({ ...errors, name: '' })
             }}
             error={errors.name}
-            validate={validateRequired}
+            validate={(value) => validateRequired(value, 'Ad Soyad')}
             required
           />
 
@@ -128,8 +128,8 @@ export default function KullaniciDuzenleForm({ user, onSuccess }: KullaniciDuzen
             label="E-posta"
             type="email"
             value={formData.email}
-            onChange={(value) => {
-              setFormData({ ...formData, email: value })
+            onChange={(e) => {
+              setFormData({ ...formData, email: e.target.value })
               setErrors({ ...errors, email: '' })
             }}
             error={errors.email}
@@ -141,8 +141,8 @@ export default function KullaniciDuzenleForm({ user, onSuccess }: KullaniciDuzen
             label="Yeni Şifre"
             type="password"
             value={formData.password}
-            onChange={(value) => {
-              setFormData({ ...formData, password: value })
+            onChange={(e) => {
+              setFormData({ ...formData, password: e.target.value })
               setErrors({ ...errors, password: '' })
             }}
             error={errors.password}
