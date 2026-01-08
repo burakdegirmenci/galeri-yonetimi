@@ -4,6 +4,12 @@ const { PrismaClient } = require('@prisma/client');
 async function setupAndStart() {
   console.log('🚀 Starting Galeri Yönetim Sistemi...\n');
 
+  // Set default DATABASE_URL if not provided
+  if (!process.env.DATABASE_URL) {
+    console.log('📝 DATABASE_URL not set, using SQLite default...');
+    process.env.DATABASE_URL = 'file:./prod.db';
+  }
+
   try {
     // Step 1: Generate Prisma Client
     console.log('📦 Generating Prisma Client...');

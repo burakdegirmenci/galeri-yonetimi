@@ -1,10 +1,10 @@
 # 🚗 Galeri Yönetim Sistemi
 
-Modern araç galerisi yönetim sistemi. Next.js 14, TypeScript, Tailwind CSS, Prisma ORM ve PostgreSQL ile geliştirilmiştir.
+Modern araç galerisi yönetim sistemi. Next.js 14, TypeScript, Tailwind CSS, Prisma ORM ile geliştirilmiştir.
 
 ## ✨ Özellikler
 
-- 🚗 Araç yönetimi (Ekleme, düzenleme, silme, plaka bazlı)
+- 🚗 Araç yönetimi (Plaka bazlı, ekleme, düzenleme, silme)
 - 💰 Alım-satım işlem takibi
 - 💸 Gider yönetimi
 - 👥 Müşteri yönetimi
@@ -12,170 +12,131 @@ Modern araç galerisi yönetim sistemi. Next.js 14, TypeScript, Tailwind CSS, Pr
 - 📸 Araç fotoğraf galerisi
 - 📄 Ekspertiz PDF yükleme
 - 🔐 JWT tabanlı kimlik doğrulama
-- 🎨 Modern ve responsive UI
-
-## 🛠 Teknoloji Stack
-
-- **Framework:** Next.js 14 (App Router)
-- **Dil:** TypeScript
-- **Styling:** Tailwind CSS
-- **Database:** PostgreSQL
-- **ORM:** Prisma
-- **Auth:** JWT with HTTP-only cookies
-- **Charts:** Chart.js
+- 🎨 Modern ve responsive Tailwind CSS UI
 
 ---
 
-## 🚀 One-Click Deployment (Coolify)
+## 🚀 Tek Tık Deploy (Coolify)
 
-### **Otomatik Kurulum - Hiçbir Manuel Ayar Gerekmez!**
+### **SADECE 2 ADIM - Hiçbir Ayar Gerekmez!**
 
-Bu proje **tek tıkla** deploy edilebilir şekilde hazırlanmıştır:
-
-✅ Database migration otomatik çalışır
-✅ Admin kullanıcı otomatik oluşturulur
-✅ JWT secret yoksa otomatik generate edilir
-✅ Hiçbir manuel komut veya ayar gerekmez
-
----
-
-### 📋 Deploy Adımları
-
-#### **1. PostgreSQL Database Ekle**
+#### 1️⃣ GitHub Repository Bağla
 
 Coolify dashboard'da:
-1. "New Resource" → "Database" → "PostgreSQL"
-2. İsim ver ve "Create" butonuna bas
-3. DATABASE_URL otomatik atanacak ✅
+- "New Resource" → "GitHub App"
+- Repository: `burakdegirmenci/galeri-yonetimi`
+- Branch: `main`
 
-#### **2. GitHub Repository Bağla**
+#### 2️⃣ Deploy Butonuna Bas
 
-1. "New Resource" → "GitHub App"
-2. Repository: `burakdegirmenci/galeri-yonetimi`
-3. Branch: `main`
-4. Service type: "Application"
+**Hiçbir environment variable eklemeyin!**
 
-#### **3. Deploy!**
+Otomatik olarak:
+- ✅ SQLite database oluşur
+- ✅ Migration çalışır
+- ✅ Admin kullanıcı oluşur
+- ✅ JWT secret generate edilir
+- ✅ Sistem çalışır duruma gelir
 
-**Hiçbir environment variable eklemeniz gerekmez!**
-
-- `DATABASE_URL` → Coolify otomatik sağlar (PostgreSQL service'ten)
-- `JWT_SECRET` → Yoksa otomatik generate edilir
-- `NODE_ENV` → Otomatik `production`
-
-Sadece **"Deploy"** butonuna basın! 🎉
+**Hepsi bu kadar!** 🎉
 
 ---
 
-### 🎯 Deploy Sonrası
+## 🔑 İlk Giriş
 
-Deploy tamamlandığında sistem **tamamen kullanıma hazır** olacak:
+Deploy tamamlandıktan sonra:
 
-**Default Admin Girişi:**
 - **Email:** `admin@galeri.com`
 - **Şifre:** `admin123`
 
-⚠️ **ÖNEMLİ:** İlk girişten sonra admin şifresini mutlaka değiştirin!
+⚠️ **ÖNEMLİ:** İlk girişten sonra şifreyi mutlaka değiştirin!
 
 ---
 
-### 🔧 İsteğe Bağlı Ayarlar
+## 📦 Persistent Storage (Önerilen)
 
-#### Persistent JWT Secret (Önerilen)
+### Database ve Uploads için Volume
 
-Server yeniden başladığında kullanıcı oturumlarının devam etmesini istiyorsanız:
+Coolify'da volume ekleyin:
 
 ```bash
-# Coolify Environment Variables'a ekleyin:
-JWT_SECRET=your-secure-random-32-char-string
+# Database için
+/app/prisma/prod.db
+
+# Uploads için
+/app/public/uploads
 ```
 
-Oluşturmak için: `openssl rand -base64 32`
+Bu sayede restart'larda verileriniz korunur.
 
-#### File Upload Storage (Persistent Volume)
+---
 
-Dosya yüklemeleri için kalıcı depolama:
+## 🔧 İsteğe Bağlı: PostgreSQL
 
-1. Coolify → Volumes → "Add Volume"
-2. Mount path: `/app/public/uploads`
-3. Kaydet
+Daha fazla performans ve ölçeklenebilirlik için PostgreSQL kullanabilirsiniz:
+
+1. Coolify'da PostgreSQL service ekleyin
+2. Environment variable ekleyin:
+   ```
+   DATABASE_URL=postgresql://user:pass@postgres:5432/galeri
+   ```
+3. Schema'yı PostgreSQL için güncelleyin ve redeploy edin
 
 ---
 
 ## 💻 Local Development
 
-### Gereksinimler
-
-- Node.js 18+
-- PostgreSQL veya SQLite
-
-### Kurulum
-
 ```bash
-# Clone repository
+# Clone
 git clone https://github.com/burakdegirmenci/galeri-yonetimi.git
 cd galeri-yonetimi
 
-# Install dependencies
+# Install
 npm install
 
-# Setup environment
+# Setup
 cp .env.example .env
-# .env dosyasını düzenleyin
 
-# Run migrations
+# Migrate
 npx prisma migrate dev
 
-# Seed admin user
+# Seed
 npm run prisma:seed
 
-# Start dev server
+# Dev server
 npm run dev
 ```
 
-Uygulama http://localhost:3000 adresinde çalışacaktır.
+http://localhost:3000
 
 ---
 
 ## 📁 Proje Yapısı
 
 ```
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   ├── panel/             # Dashboard pages
-│   └── globals.css        # Global styles
-├── components/            # React components
-├── lib/                   # Utility functions & config
-├── prisma/               # Database schema & migrations
-│   ├── schema.prisma     # Prisma schema
-│   ├── migrations/       # Migration files
-│   └── seed.ts           # Seed script
-├── scripts/              # Deployment scripts
-│   └── setup-and-start.js  # Auto-setup on deploy
-├── public/               # Static files
-│   └── uploads/         # User uploads (gitignored)
-└── .env.example         # Environment template
+├── app/                   # Next.js App Router
+│   ├── api/              # API endpoints
+│   ├── panel/            # Dashboard pages
+│   └── giris/            # Login page
+├── components/           # React components
+├── lib/                  # Utils & config
+├── prisma/              # Database schema & migrations
+├── scripts/             # Deployment scripts
+│   └── setup-and-start.js  # Auto-setup on start
+└── public/uploads/      # File uploads
 ```
 
 ---
 
-## 📜 Scripts
+## 🛠 Scripts
 
 ```bash
-# Development
-npm run dev                      # Geliştirme sunucusu
-npm run build                    # Production build
-npm start                        # Production sunucu (auto-setup dahil)
-npm run start:next              # Direct Next.js start (no setup)
-
-# Database
-npm run prisma:generate          # Prisma client oluştur
-npm run prisma:migrate          # Development migrate
-npm run prisma:migrate:deploy   # Production migrate
-npm run prisma:seed             # Seed data oluştur
-
-# Code Quality
-npm run lint                     # ESLint çalıştır
+npm run dev              # Development server
+npm run build            # Production build
+npm start                # Production (auto-setup + start)
+npm run start:next       # Direct Next.js start
+npm run prisma:generate  # Generate Prisma client
+npm run prisma:seed      # Create admin user
 ```
 
 ---
@@ -184,9 +145,9 @@ npm run lint                     # ESLint çalıştır
 
 - JWT authentication with HTTP-only cookies
 - Bcrypt password hashing
-- CSRF protection via sameSite cookies
-- Environment-based secrets
-- Auto-generated JWT secret if not provided
+- Auto-generated JWT secret
+- CSRF protection
+- Secure file uploads
 
 ---
 
@@ -196,12 +157,8 @@ MIT
 
 ---
 
-## 🆘 Destek
+## 🙏 Katkıda Bulunun
 
-Sorular veya sorunlar için: [GitHub Issues](https://github.com/burakdegirmenci/galeri-yonetimi/issues)
+Pull request'ler memnuniyetle karşılanır!
 
----
-
-## 🙏 Teşekkürler
-
-Modern araç galerisi yönetimi için tasarlandı. Katkılarınızı bekliyoruz!
+Issues: [GitHub Issues](https://github.com/burakdegirmenci/galeri-yonetimi/issues)
