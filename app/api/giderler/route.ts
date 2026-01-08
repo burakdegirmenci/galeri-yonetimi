@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
+import { createAuditLog } from '@/lib/audit'
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,6 +19,20 @@ export async function POST(request: NextRequest) {
         amount: data.amount,
         date: data.date ? new Date(data.date) : new Date(),
         description: data.description,
+      },
+    })
+
+    // Audit log
+    await createAuditLog({
+      userId: user.userId,
+      action: 'CREATE',
+      entity: 'Expense',
+      entityId: expense.id,
+      newData: {
+        vehicleId: expense.vehicleId,
+        type: expense.type,
+        amount: expense.amount,
+        description: expense.description,
       },
     })
 

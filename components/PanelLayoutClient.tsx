@@ -6,19 +6,21 @@ import UstCubuk from '@/components/UstCubuk'
 
 interface PanelLayoutClientProps {
   userName: string
+  userRole: string
   children: React.ReactNode
 }
 
-export default function PanelLayoutClient({ userName, children }: PanelLayoutClientProps) {
+export default function PanelLayoutClient({ userName, userRole, children }: PanelLayoutClientProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
     <div className="flex min-h-screen">
       {/* Desktop Sidebar */}
-      <YanMenu />
+      <YanMenu userRole={userRole} />
 
       {/* Mobile Sidebar */}
       <YanMenu
+        userRole={userRole}
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         isMobile

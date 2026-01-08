@@ -12,10 +12,12 @@ model User {
   email        String        @unique
   passwordHash String
   name         String
-  role         String        @default("ADMIN")
+  role         String        @default("ADMIN") // SUPER_ADMIN or ADMIN
+  isActive     Boolean       @default(true)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   transactions Transaction[]
+  auditLogs    AuditLog[]
 }
 
 model Vehicle {
@@ -101,4 +103,23 @@ model Expense {
 
   @@index([vehicleId])
   @@index([date])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  action     String   // CREATE, UPDATE, DELETE, LOGIN, LOGOUT
+  entity     String   // User, Vehicle, Customer, Transaction, Expense
+  entityId   String?  // ID of the affected entity
+  oldData    String?  // JSON of old data (for UPDATE/DELETE)
+  newData    String?  // JSON of new data (for CREATE/UPDATE)
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([entity])
+  @@index([action])
+  @@index([createdAt])
 }

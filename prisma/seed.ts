@@ -8,18 +8,23 @@ async function main() {
 
   const admin = await prisma.user.upsert({
     where: { email: 'admin@galeri.com' },
-    update: {},
+    update: {
+      role: 'SUPER_ADMIN',
+      isActive: true,
+    },
     create: {
       email: 'admin@galeri.com',
       passwordHash,
-      name: 'Admin Kullanıcı',
-      role: 'ADMIN',
+      name: 'Süper Admin',
+      role: 'SUPER_ADMIN',
+      isActive: true,
     },
   })
 
   console.log('✅ Seed tamamlandı!')
   console.log('📧 Email: admin@galeri.com')
   console.log('🔑 Şifre: admin123')
+  console.log('👑 Role: SUPER_ADMIN')
 }
 
 main()

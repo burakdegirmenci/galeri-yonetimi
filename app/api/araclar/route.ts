@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
+import { createAuditLog } from '@/lib/audit'
 
 export async function GET() {
   try {
@@ -55,6 +56,21 @@ export async function POST(request: NextRequest) {
         kmAtPurchase: data.kmAtPurchase,
         purchasePrice: data.purchasePrice,
         notes: data.notes,
+      },
+    })
+
+    // Audit log
+    await createAuditLog({
+      userId: user.userId,
+      action: 'CREATE',
+      entity: 'Vehicle',
+      entityId: vehicle.id,
+      newData: {
+        licensePlate: vehicle.licensePlate,
+        brand: vehicle.brand,
+        model: vehicle.model,
+        year: vehicle.year,
+        purchasePrice: vehicle.purchasePrice,
       },
     })
 

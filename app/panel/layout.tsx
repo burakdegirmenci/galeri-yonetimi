@@ -13,5 +13,5 @@ export default async function PanelLayout({
     redirect('/giris')
   }
 
-  return <PanelLayoutClient userName={user.name}>{children}</PanelLayoutClient>
+  return <PanelLayoutClient userName={user.name} userRole={user.role}>{children}</PanelLayoutClient>
 }

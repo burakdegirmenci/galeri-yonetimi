@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-const menuItems = [
+const baseMenuItems = [
   { href: '/panel', label: 'Genel Bakış', icon: '📊' },
   { href: '/panel/araclar', label: 'Araçlar', icon: '🚗' },
   { href: '/panel/musteriler', label: 'Müşteriler', icon: '👥' },
@@ -12,14 +12,24 @@ const menuItems = [
   { href: '/panel/analitik', label: 'Analitik', icon: '📈' },
 ]
 
+const superAdminMenuItems = [
+  { href: '/panel/kullanicilar', label: 'Kullanıcılar', icon: '👤' },
+  { href: '/panel/audit-log', label: 'Audit Log', icon: '📋' },
+]
+
 interface YanMenuProps {
+  userRole: string
   isOpen?: boolean
   onClose?: () => void
   isMobile?: boolean
 }
 
-export default function YanMenu({ isOpen = true, onClose, isMobile = false }: YanMenuProps) {
+export default function YanMenu({ userRole, isOpen = true, onClose, isMobile = false }: YanMenuProps) {
   const pathname = usePathname()
+
+  const menuItems = userRole === 'SUPER_ADMIN'
+    ? [...baseMenuItems, ...superAdminMenuItems]
+    : baseMenuItems
 
   const handleLinkClick = () => {
     if (isMobile && onClose) {

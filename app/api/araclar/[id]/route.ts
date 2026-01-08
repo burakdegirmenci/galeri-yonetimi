@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
+import { createAuditLog } from '@/lib/audit'
+import { canDeleteVehicle } from '@/lib/permissions'
 
 export async function PUT(
   request: NextRequest,
@@ -13,6 +15,15 @@ export async function PUT(
     }
 
     const data = await request.json()
+
+    // Get old data for audit
+    const oldVehicle = await prisma.vehicle.findUnique({
+      where: { id: params.id },
+    })
+
+    if (!oldVehicle) {
+      return NextResponse.json({ error: 'Araç bulunamadı' }, { status: 404 })
+    }
 
     // Check if licensePlate is being changed and if it's already in use
     if (data.licensePlate) {
@@ -48,6 +59,28 @@ export async function PUT(
       },
     })
 
+    // Audit log
+    await createAuditLog({
+      userId: user.userId,
+      action: 'UPDATE',
+      entity: 'Vehicle',
+      entityId: vehicle.id,
+      oldData: {
+        licensePlate: oldVehicle.licensePlate,
+        brand: oldVehicle.brand,
+        model: oldVehicle.model,
+        status: oldVehicle.status,
+        purchasePrice: oldVehicle.purchasePrice,
+      },
+      newData: {
+        licensePlate: vehicle.licensePlate,
+        brand: vehicle.brand,
+        model: vehicle.model,
+        status: vehicle.status,
+        purchasePrice: vehicle.purchasePrice,
+      },
+    })
+
     return NextResponse.json(vehicle)
   } catch (error) {
     console.error('Update vehicle error:', error)
@@ -68,6 +101,19 @@ export async function DELETE(
       return NextResponse.json({ error: 'Yetkisiz erişim' }, { status: 401 })
     }
 
+    if (!canDeleteVehicle(user)) {
+      return NextResponse.json({ error: 'Bu işlem için yetkiniz yok' }, { status: 403 })
+    }
+
+    // Get vehicle data before deletion for audit
+    const vehicle = await prisma.vehicle.findUnique({
+      where: { id: params.id },
+    })
+
+    if (!vehicle) {
+      return NextResponse.json({ error: 'Araç bulunamadı' }, { status: 404 })
+    }
+
     // Delete related records first (cascade delete)
     await prisma.expense.deleteMany({
       where: { vehicleId: params.id },
@@ -80,6 +126,20 @@ export async function DELETE(
     // Delete the vehicle
     await prisma.vehicle.delete({
       where: { id: params.id },
+    })
+
+    // Audit log
+    await createAuditLog({
+      userId: user.userId,
+      action: 'DELETE',
+      entity: 'Vehicle',
+      entityId: vehicle.id,
+      oldData: {
+        licensePlate: vehicle.licensePlate,
+        brand: vehicle.brand,
+        model: vehicle.model,
+        year: vehicle.year,
+      },
     })
 
     return NextResponse.json({ message: 'Araç başarıyla silindi' })
