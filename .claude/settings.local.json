@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(npm install)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(npm run prisma:seed:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout:*)",
+      "Bash(taskkill:*)",
+      "Bash(nul)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(if not exist \"public\\uploads\\expertise\" mkdir \"public\\uploads\\expertise\")",
+      "Bash(sqlite3:*)",
+      "Bash(npx prisma db execute:*)",
+      "Bash(if exist \"node_modules\\.prisma\" rmdir /S /Q \"node_modules\\.prisma\")",
+      "Bash(test:*)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  role         String        @default("ADMIN")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+}
+
+model Vehicle {
+  id                    String            @id @default(cuid())
+  licensePlate          String            @unique
+  brand                 String
+  model                 String
+  year                  Int
+  bodyType              String?
+  engineDisplacement    String?
+  enginePower           String?
+  fuelType              String
+  transmission          String
+  drivetrain            String?
+  exteriorColor         String?
+  interiorColor         String?
+  vin                   String?           @unique
+  engineNumber          String?
+  kmAtPurchase          Int?
+  kmAtSale              Int?
+  status                String            @default("IN_STOCK")
+  purchasePrice         Float
+  salePrice             Float?
+  galleryEntryDate      DateTime          @default(now())
+  galleryExitDate       DateTime?
+  notes                 String?
+  hasDebt               Boolean           @default(false)
+  hasLien               Boolean           @default(false)
+  inspectionValidUntil  DateTime?
+  expertiseReportDate   DateTime?
+  expertiseSummary      String?
+  damageRecordSummary   String?
+  expertisePdfPath      String?
+  images                String?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  expenses              Expense[]
+  transactions          Transaction[]
+}
+
+model Customer {
+  id           String        @id @default(cuid())
+  name         String
+  phone        String
+  email        String?
+  type         String
+  notes        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+}
+
+model Transaction {
+  id           String          @id @default(cuid())
+  type         String
+  vehicleId    String
+  customerId   String
+  price        Float
+  date         DateTime        @default(now())
+  notes        String?
+  createdById  String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  vehicle      Vehicle         @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  customer     Customer        @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  createdBy    User            @relation(fields: [createdById], references: [id])
+
+  @@index([vehicleId])
+  @@index([customerId])
+  @@index([date])
+}
+
+model Expense {
+  id          String      @id @default(cuid())
+  vehicleId   String?
+  type        String
+  amount      Float
+  date        DateTime    @default(now())
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  vehicle     Vehicle?    @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([date])
+}
